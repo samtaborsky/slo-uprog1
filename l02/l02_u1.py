@@ -1,6 +1,6 @@
 slovo = list(input('Zadejte slovo: '))
-slovo1 = [''] * len(slovo)
 pocet = len(slovo)
+slovo1 = [''] * pocet
 pocet -= 1
 
 for x in slovo:
