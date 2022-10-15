@@ -3,7 +3,7 @@ import random
 n = random.randint(1, 2)
 cisla = []
 
-for x in range(n):
+for _ in range(n):
     c = round(random.uniform(0, 100), 2)
     cisla.append(c)
 
