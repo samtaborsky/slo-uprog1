@@ -2,7 +2,6 @@ from time import *
 from random import *
 
 t1 = localtime()
-print(t1)
 print('Od ', end='')
 print(strftime('%d.%m.%y %H:%M', t1))
 t2 = list(t1)

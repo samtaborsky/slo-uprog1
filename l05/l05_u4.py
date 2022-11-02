@@ -11,9 +11,9 @@ while time() < time2:
         else:
             cisla.append(n)
     except ValueError:
-        print('Spatny input.')
+        print('Spatny vstup.')
     except TypeError:
-        print('Duplicitny vstup')
+        print('Duplicitny vstup.')
 
 print()
 print(cisla)
