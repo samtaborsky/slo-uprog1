@@ -35,15 +35,3 @@ class Bod2G(Bod):
     def krok(self):
         self.translace(self.vx, self.vy)
         self.vy -= 10
-
-
-b = Bod2G(0.0, 100.0, 3.0, 100.0)
-t = 0
-print("t[s] x[m]  y[m]  vx[m/s]  vy[m/s]")
-print(t, b)
-
-while True:
-    b.krok()
-    t += 1
-    print(t, b)
-    time.sleep(1)
