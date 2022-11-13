@@ -3,6 +3,7 @@ import time
 import random
 import threading
 import os
+import sys
 
 n = 20
 started = False
@@ -45,77 +46,42 @@ def move():
     time.sleep(speed)
 
     while started:
+        new_row = 0
+        new_col = 0
         if d == 'e':
             new_row = snake[-1][0]
             new_col = snake[-1][1] + 1
             if new_col == n:
                 new_col = 0
-            if vyhodnot(new_row, new_col) == 1:
-                gen_food(snake)
-                speed -= 0.025
-            else:
-                matrix[snake[0][0]][snake[0][1]]['bg'] = 'white'
-                del snake[0]
-            snake.append([new_row, new_col])
-            if vyhodnot(snake) == 2:
-                startlabel['text'] = 'SMRT'
-                break
-            else:
-                matrix[snake[-1][0]][snake[-1][1]]['bg'] = 'blue'
-
         elif d == 'w':
             new_row = snake[-1][0]
             new_col = snake[-1][1] - 1
             if new_col == -1:
                 new_col = n - 1
-            if vyhodnot(new_row, new_col) == 1:
-                gen_food(snake)
-                speed -= 0.025
-            else:
-                matrix[snake[0][0]][snake[0][1]]['bg'] = 'white'
-                del snake[0]
-            snake.append([new_row, new_col])
-            if vyhodnot(snake) == 2:
-                startlabel['text'] = 'SMRT'
-                break
-            else:
-                matrix[snake[-1][0]][snake[-1][1]]['bg'] = 'blue'
-
         elif d == 's':
             new_row = snake[-1][0] + 1
             new_col = snake[-1][1]
             if new_row == n:
                 new_row = 0
-            if vyhodnot(new_row, new_col) == 1:
-                gen_food(snake)
-                speed -= 0.025
-            else:
-                matrix[snake[0][0]][snake[0][1]]['bg'] = 'white'
-                del snake[0]
-            snake.append([new_row, new_col])
-            if vyhodnot(snake) == 2:
-                startlabel['text'] = 'SMRT'
-                break
-            else:
-                matrix[snake[-1][0]][snake[-1][1]]['bg'] = 'blue'
-
         elif d == 'n':
             new_row = snake[-1][0] - 1
             new_col = snake[-1][1]
             if new_row == -1:
                 new_row = n - 1
-            if vyhodnot(new_row, new_col) == 1:
-                gen_food(snake)
-                speed -= 0.025
-            else:
-                matrix[snake[0][0]][snake[0][1]]['bg'] = 'white'
-                del snake[0]
-            snake.append([new_row, new_col])
-            if vyhodnot(snake) == 2:
-                startlabel['text'] = 'SMRT'
-                break
-            else:
-                matrix[snake[-1][0]][snake[-1][1]]['bg'] = 'blue'
+
+        if vyhodnot(new_row, new_col) == 1:
+            gen_food(snake)
+            if speed > 0.05:
+                speed -= 0.05
+        else:
+            matrix[snake[0][0]][snake[0][1]]['bg'] = 'white'
+            del snake[0]
+        snake.append([new_row, new_col])
+        if vyhodnot(snake) == 2:
+            startlabel['text'] = 'SMRT'
+            break
+        else:
+            matrix[snake[-1][0]][snake[-1][1]]['bg'] = 'blue'
 
         if vyhodnot(snake) == 3:
             startlabel['text'] = 'VYHRA'
@@ -136,6 +102,7 @@ def gen_food(s):
         matrix[food_row][food_col]['bg'] = 'green'
 
 
+# noinspection PyTypeChecker
 def vyhodnot(*args):
     if len(args) == 1:
         if matrix[args[0][-1][0]][args[0][-1][1]]['bg'] == 'blue':
@@ -148,7 +115,7 @@ def vyhodnot(*args):
 
 
 def startstop():
-    global started, d
+    global started, d, speed
     if not started:
         started = True
         startbutton['text'] = 'RESET'
@@ -158,12 +125,19 @@ def startstop():
     elif started:
         started = False
         d = 'e'
+        speed = 0.5
         startbutton['text'] = 'START'
         startbutton['bg'] = 'green'
         startlabel['text'] = 'Klikni...'
         for x in range(n):
             for y in range(n):
                 matrix[x][y]['bg'] = 'white'
+
+
+def kill(*args):
+    if started:
+        startstop()
+    root.destroy()
 
 
 root = Tk()
@@ -188,10 +162,13 @@ for i in range(n):
 
 startlabel = Label(root, text='Klikni...')
 startbutton = Button(root, text='START', bg='green', command=startstop)
-startlabel.grid(row=n + 1, columnspan=n)
-startbutton.grid(row=n + 2, column=0, columnspan=n)
+startlabel.grid(row=n+1, columnspan=n)
+startbutton.grid(row=n+2, column=0, columnspan=n)
 root.bind('<Right>', change_e)
 root.bind('<Left>', change_w)
 root.bind('<Up>', change_n)
 root.bind('<Down>', change_s)
+root.bind('<Escape>', kill)
+root.protocol('WM_DELETE_WINDOW', kill)
 root.mainloop()
+sys.exit()
