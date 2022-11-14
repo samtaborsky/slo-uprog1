@@ -78,7 +78,7 @@ def move():
         if vyhodnot(new_row, new_col) == 1:  # pokial dalsie policko obsahuje jedlo
             gen_food(snake)
             if speed > 0.05:  # po tejto hodnote to uz bolo neovladatelne
-                speed -= 0.05
+                speed -= 0.025
         else:  # posunutie chvostu
             matrix[snake[0][0]][snake[0][1]]['bg'] = 'white'
             del snake[0]
