@@ -4,12 +4,16 @@ import threading
 import time
 from tkinter import *
 
-
-n = 20
 started = False
-d = 'e'  # smer (east, west, north, south)
+n = 20
 snake_def = [[0, 0], [0, 1], [0, 2]]  # zakladny had, moze byt lubovolne upraveny (chvost: [0], hlava: [-1])
-speed = 0.5
+# vlastnosti hada
+d = 'e'  # smer (east, west, north, south)
+speed = 0.5  # cas medzi pohybmi, po kazdom jedle sa zmensi
+# farby hada
+food_color = 'purple'
+snake_color = 'pink'
+background_color = 'white'
 
 
 def run():
@@ -47,7 +51,7 @@ def move():
     global speed
     snake = snake_def[:]
     for x in range(len(snake)):  # vykreslenie zakladneho hada
-        matrix[snake[x][0]][snake[x][1]]['bg'] = 'blue'
+        matrix[snake[x][0]][snake[x][1]]['bg'] = snake_color
     gen_food(snake)
     time.sleep(speed)
 
@@ -80,14 +84,14 @@ def move():
             if speed > 0.05:  # po tejto hodnote to uz bolo neovladatelne
                 speed -= 0.025
         else:  # posunutie chvostu
-            matrix[snake[0][0]][snake[0][1]]['bg'] = 'white'
+            matrix[snake[0][0]][snake[0][1]]['bg'] = background_color
             del snake[0]
         snake.append([new_row, new_col])
         if vyhodnot(snake) == 2:  # pokial dalsie policko obsahuje cast hada
             startlabel['text'] = 'SMRT'
             break
         else:
-            matrix[snake[-1][0]][snake[-1][1]]['bg'] = 'blue'
+            matrix[snake[-1][0]][snake[-1][1]]['bg'] = snake_color
 
         if vyhodnot(snake) == 3:  # pokial vsetky policka obsahuju hada
             startlabel['text'] = 'VYHRA'
@@ -103,10 +107,10 @@ def gen_food(s):  # TODO generovanie jedla ak je had velmi dlhy
     food_col = random.randint(0, n - 1)
     while abs(s[-1][1] - food_col) <= 2:
         food_col = random.randint(0, n - 1)
-    if matrix[food_row][food_col]['bg'] == 'blue':  # podmienka aby jedlo nebolo vnutri hada
+    if matrix[food_row][food_col]['bg'] == snake_color:  # podmienka aby jedlo nebolo vnutri hada
         gen_food(s)
     else:
-        matrix[food_row][food_col]['bg'] = 'green'
+        matrix[food_row][food_col]['bg'] = food_color
 
 
 # noinspection PyTypeChecker
@@ -123,12 +127,12 @@ def vyhodnot(*args):
     """
 
     if len(args) == 1:  # SMRT
-        if matrix[args[0][-1][0]][args[0][-1][1]]['bg'] == 'blue':
+        if matrix[args[0][-1][0]][args[0][-1][1]]['bg'] == snake_color:
             return 2
         if len(args[0]) == n*n:  # VYHRA
             return 3
     elif len(args) == 2:  # zjedenie jedla
-        if matrix[args[0]][args[1]]['bg'] == 'green':
+        if matrix[args[0]][args[1]]['bg'] == food_color:
             return 1
 
 
@@ -150,7 +154,7 @@ def startstop():
         startlabel['text'] = 'Klikni...'
         for x in range(n):
             for y in range(n):
-                matrix[x][y]['bg'] = 'white'
+                matrix[x][y]['bg'] = background_color
 
 
 def kill(*args):  # pokial bezal thread, boli problemy so zatvorenim procesu, osetril som to takymto sposobom
@@ -166,6 +170,7 @@ root.iconbitmap(path)
 root.title('Snake')
 root.geometry('500x500')
 root.option_add('*Font', 'Verdana 14')
+root.configure(bg=background_color)
 root.focus()
 
 # vygenerovanie matice tlacidiel
@@ -175,12 +180,12 @@ for i in range(n):
     root.rowconfigure(i, weight=1)
     for j in range(n):
         root.columnconfigure(j, weight=1)
-        b = Button(root, text=' ', bg='white')
+        b = Button(root, text=' ', bg=background_color)
         b.grid(row=i, column=j, sticky='NSEW')
         b['state'] = DISABLED
         matrix[i].append(b)
 
-startlabel = Label(root, text='Klikni...')
+startlabel = Label(root, text='Klikni...', bg=background_color)
 startbutton = Button(root, text='START', bg='green', command=startstop)
 startlabel.grid(row=n+1, columnspan=n)
 startbutton.grid(row=n+2, column=0, columnspan=n)
