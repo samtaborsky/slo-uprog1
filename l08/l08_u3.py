@@ -23,7 +23,7 @@ def zmenit(*args):
         int_entry.delete(0, END)
         rozsah_entry.delete(0, END)
     finally:
-        ovoce_dict[-1]['text'] = f'{interval}s  ... +- 1-{rozsah}ks'
+        ovoce_dict[-1]['text'] = f'{interval}s  ...  +- 1-{rozsah}ks'
 
 
 def pocet_rows():
@@ -44,7 +44,7 @@ def vykresli():
         lab.grid(row=n, columnspan=5, sticky='EW')
         ovoce_dict.append(lab)
         n += 1
-    intlab = Label(root, text=f'{interval}s  ... +- 1-{rozsah}ks')
+    intlab = Label(root, text=f'{interval}s  ...  +- 1-{rozsah}ks')
     intlab.grid(row=n, columnspan=5, sticky='EW')
     ovoce_dict.append(intlab)
 
@@ -57,10 +57,8 @@ def run_thread():
 
 
 def aktualizuj():
-    global db_open
-
+    global ovoce_dict, db_open
     while db_open:
-        global ovoce_dict
         rows = cursor.execute('SELECT * FROM ovoce').fetchall()
         for row in rows:
             new_pocetks = random.randint(-rozsah, rozsah)
@@ -80,6 +78,7 @@ def aktualizuj():
         else:
             time.sleep(interval)
 
+    db_open = False
     db.close()
 
 
@@ -103,7 +102,7 @@ root = Tk()
 path = os.path.dirname(__file__) + r'\grape.ico'
 root.iconbitmap(path)
 root.option_add('*Font', 'Verdana 12')
-root.title('Ovoce')
+root.title('Sklad ovoce')
 root.focus()
 root.bind('<Escape>', kill)
 root.bind('<Return>', zmenit)
